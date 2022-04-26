@@ -1,0 +1,33 @@
+{
+  "name": "tokenutil",
+  "version": "1.0.0",
+  "description": "Token/Smart contract library supporting ERC20, ERC721, ERC721A, ERC1166",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cameron8817/TokenUtil.git"
+  },
+  "keywords": [
+    "Smart",
+    "Contract",
+    "ERC20",
+    "ERC721",
+    "ERC1155",
+    "NFT"
+  ],
+  "author": "C.Knight",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cameron8817/TokenUtil/issues"
+  },
+  "homepage": "https://github.com/Cameron8817/TokenUtil#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0"
+  },
+  "devDependencies": {
+    "hardhat": "^2.9.3"
+  }
+}
