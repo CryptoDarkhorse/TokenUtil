@@ -1,11 +1,22 @@
 const { task } = require("hardhat/config");
-const { getContract } = require("./helpers");
+const { getContract } = require("./helper");
 const fetch = require("node-fetch");
 
+const info = require("./token_info.json");
+
 task("mint", "Mints from the NFT contract")
+  .addParam("token", "Name of the token")
   .addParam("address", "The address to receive a token")
   .setAction(async function (taskArguments, hre) {
-    const contract = await getContract("NFT", hre);
+    const tokenName = taskArguments.token;
+
+    if (!(tokenName in info)) {
+      console.log("Contract address is not found. Deploy the token first!");
+      return;
+    }
+
+    const tokenAddress = info[tokenName];
+    const contract = await getContract(tokenName, tokenAddress, hre);
     const transactionResponse = await contract.mintTo(taskArguments.address, {
       gasLimit: 500_000,
     });
@@ -16,9 +27,10 @@ task(
   "set-base-token-uri",
   "Sets the base token URI for the deployed smart contract"
 )
+  .addParam("token", "Name of the token")
   .addParam("baseUrl", "The base of the tokenURI endpoint to set")
   .setAction(async function (taskArguments, hre) {
-    const contract = await getContract("NFT", hre);
+    const contract = await getContract(taskArguments.token, hre);
     const transactionResponse = await contract.setBaseTokenURI(
       taskArguments.baseUrl,
       {
@@ -29,9 +41,10 @@ task(
   });
 
 task("token-uri", "Fetches the token metadata for the given token ID")
+  .addParam("token", "Name of the token")
   .addParam("tokenId", "The tokenID to fetch metadata for")
   .setAction(async function (taskArguments, hre) {
-    const contract = await getContract("NFT", hre);
+    const contract = await getContract(taskArguments.token, hre);
     const response = await contract.tokenURI(taskArguments.tokenId, {
       gasLimit: 500_000,
     });

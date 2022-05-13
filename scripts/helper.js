@@ -14,9 +14,17 @@ function getEnvVariable(key, defaultValue) {
 
 // Helper method for fetching a connection provider to the Ethereum network
 function getProvider() {
-  return ethers.getDefaultProvider(getEnvVariable("NETWORK", "rinkeby"), {
-    alchemy: getEnvVariable("ALCHEMY_KEY"),
-  });
+  const network = getEnvVariable("NETWORK", "rinkeby");
+
+  if (network == "ganache") {
+    // const url = "http://localhost:8545"; // URL for Ganache
+    const url = "http://localhost:7545"; // URL for Ganache(UI version)
+    return new ethers.providers.JsonRpcProvider(url);
+  } else {
+    return ethers.getDefaultProvider(network, {
+      alchemy: getEnvVariable("ALCHEMY_KEY"),
+    });
+  }
 }
 
 // Helper method for fetching a wallet account using an environment variable for the PK
@@ -28,14 +36,9 @@ function getAccount() {
 }
 
 // Helper method for fetching a contract instance at a given address
-function getContract(contractName, hre) {
+function getContract(contractName, contractAddress, hre) {
   const account = getAccount();
-  return getContractAt(
-    hre,
-    contractName,
-    getEnvVariable("NFT_CONTRACT_ADDRESS"),
-    account
-  );
+  return getContractAt(hre, contractName, contractAddress, account);
 }
 
 module.exports = {
