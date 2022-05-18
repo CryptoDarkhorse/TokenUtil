@@ -24,13 +24,11 @@ task("deploy", "Deploys the NFT.sol contract")
     );
     const nft = await nftContractFactory.deploy();
     console.log(`Contract deployed to address: ${nft.address}`);
+
     // update token address info
     info[taskArguments.token] = nft.address;
-    fs.writeFile(
-      __dirname + "/token_info.json",
-      JSON.stringify(info),
-      (err) => {
-        if (err) console.log(err);
-      }
-    );
+    file_name = __dirname + "/token_info.json";
+    fs.writeFile(file_name, JSON.stringify(info), (err) => {
+      if (err) return console.log(err);
+    });
   });
