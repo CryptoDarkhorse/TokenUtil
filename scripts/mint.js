@@ -4,7 +4,32 @@ const fetch = require("node-fetch");
 
 const info = require("./token_info.json");
 
-task("mint", "Mints from the NFT contract")
+task("mint", "Mints from the ERC20 contract")
+  .addParam("token", "Name of the token")
+  .addParam("address", "The address to receive a token")
+  .addParam("amount", "Amount of token to mint")
+  .setAction(async function (taskArguments, hre) {
+    const tokenName = taskArguments.token;
+
+    if (!(tokenName in info)) {
+      console.log("Contract address is not found. Deploy the token first!");
+      return;
+    }
+
+    const tokenAddress = info[tokenName];
+    const contract = await getContract(tokenName, tokenAddress, hre);
+
+    const transactionResponse = await contract.mint(
+      taskArguments.address,
+      taskArguments.amount,
+      {
+        gasLimit: 500_000,
+      }
+    );
+    console.log(`Transaction Hash: ${transactionResponse.hash}`);
+  });
+
+task("mint-nft", "Mints from the NFT contract")
   .addParam("token", "Name of the token")
   .addParam("address", "The address to receive a token")
   .setAction(async function (taskArguments, hre) {
@@ -17,16 +42,14 @@ task("mint", "Mints from the NFT contract")
 
     const tokenAddress = info[tokenName];
     const contract = await getContract(tokenName, tokenAddress, hre);
+
     const transactionResponse = await contract.mintTo(taskArguments.address, {
       gasLimit: 500_000,
     });
     console.log(`Transaction Hash: ${transactionResponse.hash}`);
   });
 
-task(
-  "set-base-token-uri",
-  "Sets the base token URI for the deployed smart contract"
-)
+task("set-base-nft-uri", "Sets the base token URI for the deployed NFT")
   .addParam("token", "Name of the token")
   .addParam("baseUrl", "The base of the tokenURI endpoint to set")
   .setAction(async function (taskArguments, hre) {
@@ -40,7 +63,7 @@ task(
     console.log(`Transaction Hash: ${transactionResponse.hash}`);
   });
 
-task("token-uri", "Fetches the token metadata for the given token ID")
+task("token-uri", "Fetches the NFT metadata for the given token ID")
   .addParam("token", "Name of the token")
   .addParam("tokenId", "The tokenID to fetch metadata for")
   .setAction(async function (taskArguments, hre) {
